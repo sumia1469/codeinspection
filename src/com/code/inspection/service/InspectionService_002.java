@@ -100,34 +100,127 @@ public class InspectionService_002 {
 											case "COD001_003" : //API에 따라 GET,POST,PUT,DELETE 메소드 적절히 구분
 												break;
 											case "COD001_004" : //URI 및 전달 데이터 변수에 대한 사용법 준수
+												if(inspectCode.indexOf("/v1") > 0) {
+													String codeStr = inspectCode.toString();
+													int strLen = inspectCode.indexOf("/v1");
+													String codePosition = codeStr.substring(strLen - 1, strLen);
+													if (!codePosition.equals("s")) {
+														String resultMessage = "개발표준 미준수(URI 및 전달 데이터 변수에 대한 사용법 준수(URI에 사용되는 리소스 구성은 /Domain명/Aggregate명 + 's' /버전을 붙여 사용한다.) - Line : " + lineNum + ") " + inspectCode.toString();
+														errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+													}
+												}
 												break;
 											case "COD001_005" : //URI 작성히 bff context path(bffui)는 명시하지 않아야 함(공통으로 처리됨)
+												if(inspectCode.indexOf("bffui/") > 0) {
+													String resultMessage = "개발표준 미준수(URI 작성시 bff context path(bffui)는 명시하지 않아야 함(공통으로 처리됨) - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_006" : //submission의 mode는 항상 asynchronous 사용해야 함.
+												if(inspectCode.indexOf("synchronous") > 0) {
+													String resultMessage = "개발표준 미준수(submission의 mode는 항상 asynchronous 사용해야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_007" : //submission done에서 결과 판별 시 응답헤더의 결과 code값을 확인해야 함.
+												if(inspectCode.indexOf("e.server_message.code") > 0) {
+													serverMessageCodeLen++;
+												}
 												break;
 											case "COD001_008" : //전역 함수를 선언하지 않아야 함.
+												if("function".equals(gType) && key.indexOf("scwin") < 0) {
+													String resultMessage = "개발표준 미준수(전역 함수를 선언하지 않아야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_009" : //전역 변수를 선언하지 않아야 함.
+												if(!"function".equals(gType) && key.indexOf("scwin") < 0) {
+													String resultMessage = "개발표준 미준수(전역 변수를 선언하지 않아야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_010" : //window.eval 함수를 사용하지 않아야 함
+												if(inspectCode.indexOf("eval(") > 0) {
+													String resultMessage = "개발표준 미준수(window.eval 함수를 사용하지 않아야 함(scwin[\"functionName\"]() 으로 대체 가능) - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_011" : //jQuery는 사용하지 않아야 함
+												if(inspectCode.indexOf("jquery") > 0 || inspectCode.indexOf("$") > 0) {
+													String resultMessage = "개발표준 미준수(jQuery는 사용하지 않아야 함) - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_012" : //부모창 객체 직접 접근하지 않아야 함
+												if(inspectCode.indexOf("parent") > 0) {
+													String resultMessage = "개발표준 미준수(부모창 객체 직접 접근하지 않아야 함 - Line : " + i + ")\\r\\n "
+															+ "부모창에 직접 접근은 제한하고 공통 API를 통해 접근하여야 합니다. \r\n"
+															+ "$w.parent() \r\n"
+															+ "scwin.$w.parent()\r\n"
+															+ "var parentFrame = ucube.com.cf.win.getParentFrame(scwin);\r\n"
+															+ "var dltObj = parentFrame.getObj(\"dtl_dataList1\"); //부모프레임내 데이터베이스"
+															+ "var pScwinObj = parentFrame.getObj(\"scwin\");\r\n"
+															+ "pScwinObj.search();//부모화면 내 scwin.search() 함수호출";
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_013" : //팝업창에서 오프너 창 직접 접근하지 않아야 함
+												if(inspectCode.indexOf("opener") > 0) {
+													String resultMessage = "개발표준 미준수(팝업창에서 오프너 창 직접 접근하지 않아야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_014" : //브라우저 객체(DOM)을 직접 제어하는 API는 사용하지 않아야 함
+												if(inspectCode.indexOf("document") > 0 || inspectCode.indexOf("element") > 0) {
+													String resultMessage = "개발표준 미준수(브라우저 객체(DOM)을 직접 제어하는 API는 사용하지 않아야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_015" : //브라우저 객체에 Event를 직접 제어하는 코드는 사용하지 않아야 함
+												if(inspectCode.indexOf("event") > 0) {
+													String resultMessage = "개발표준 미준수(브라우저 객체에 Event를 직접 제어하는 코드는 사용하지 않아야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_016" : //XMLHttpRequest를 직접 생성하고 조작하는 코드는 사용하지 않아야 함
+												if(inspectCode.indexOf("XMLHttpRequest") > 0) {
+													String resultMessage = "개발표준 미준수(XMLHttpRequest를 직접 생성하고 조작하는 코드는 사용하지 않아야 함 - Line : " + lineNum + ") " + inspectCode.toString();
+													errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+												}
 												break;
 											case "COD001_017" : //화면 간에 데이터를 주고 받을 때는 문자열로 Serialize해서 전달해야 함
 												break;
 											case "COD001_018" : //공통 API를 적절히 사용해야 함
+												if(inspectCode.indexOf("scopeVariable") > 0) {
+													scopeVariableLen++;
+												}
+												if(inspectCode.indexOf(".nuux.") > 0) {
+													nuuxUse++;
+												}
+												if(inspectCode.indexOf("Math.") > 0) {
+													mathUse++;
+												}
+												if(inspectCode.indexOf("Number(") > 0) {
+													numberUse++;
+												}
+												if(inspectCode.indexOf("border:1px") > 0) {
+													inlineCodeUse++;
+												}
+												if(inspectCode.indexOf("com.") > 0) {
+													String codeStr = inspectCode.toString();
+													int strLen = inspectCode.indexOf("com.");
+													String codePosition = "";
+													if(strLen < 7) {
+														codePosition = codeStr.substring(0, strLen);
+														codePosition = codePosition.trim();
+													} else {
+														codePosition = codeStr.substring(strLen - 6, strLen);
+													}
+													if(!codePosition.equals("ucube.")) {
+														String resultMessage = "개발표준 미준수(공통함수는 ucube.로 시작하여야 합니다. - Line : " + lineNum + ") " + inspectCode.toString();
+														errorSave(mainFPno, "script", "script", comCd, comCdNm, "0", "script", resultMessage);
+													}
+												}
 												break;
 											case "COD001_019" : //오류 발생시 적절하게 예외처리를 해랴 함.
 												break;
